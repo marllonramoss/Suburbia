@@ -44,13 +44,13 @@ const VideoBlock: FC<VideoBlockProps> = ({ slice }) => {
   {isFilled.keyText(slice.primary.youtube_video_id) ?
 (<LazyYouTubePlayer youTubeID={slice.primary.youtube_video_id} />) : null
 }
-</div>
 {/* Texture overlay */}
 <Image src="/image-texture.png" 
 alt=""
 fill
 className="pointer-events-none object-cover opacity-50"
 />
+</div>
       </div>
       
       {/**
