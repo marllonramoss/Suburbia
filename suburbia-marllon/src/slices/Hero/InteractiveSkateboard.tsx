@@ -2,11 +2,14 @@
 
 import * as THREE from "three"
 import { Skateboard } from '@/components/Skateboard'
-import { ContactShadows, Environment, OrbitControls } from '@react-three/drei'
-import { Canvas, ThreeEvent } from '@react-three/fiber'
-import React, { Suspense, useRef, useState } from 'react'
+import { ContactShadows, Environment, Html, OrbitControls } from '@react-three/drei'
+import { Canvas, ThreeEvent, useThree } from '@react-three/fiber'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
 import gsap from "gsap"
 import { Hotspot } from "./Hotspot"
+import { WavyPaths } from "./WavyPaths"
+
+const INITIAL_CAMERA_POSITION = [1.5, 1, 1.4] as const
 
 type Props = {
   deckTextureURL: string;
@@ -18,7 +21,7 @@ type Props = {
 export function InteractiveSkateboard({deckTextureURL, wheelTextureURL, boltColor, truckColor}: Props) {
   return (
     <div className='absolute inset-0 z-10 flex items-center justify-center text-re'>
-     <Canvas className='min-h-[60rem] w-full' camera={{ position: [1.5, 1, 1.4], fov: 55 }}>
+     <Canvas className='min-h-[60rem] w-full' camera={{ position: INITIAL_CAMERA_POSITION, fov: 55 }}>
       <Suspense>
         <Scene 
               deckTextureURL={deckTextureURL}
@@ -44,6 +47,26 @@ const [showHotspot, setShowHotspot] = useState({
   middle: true,
   back: true
 })
+
+  const {camera} = useThree()
+
+  useEffect(()=> {
+    camera.lookAt(new THREE.Vector3(-0.2, 0.15, 0))
+
+    function setZoom(){
+      const scale = Math.max(Math.min(1000 / window.innerWidth, 2.2), 1)
+
+      setZoom()
+
+      window.addEventListener("resize", setZoom)
+
+      camera.position.x = INITIAL_CAMERA_POSITION[0] * scale;
+      camera.position.y = INITIAL_CAMERA_POSITION[1] * scale;
+      camera.position.z = INITIAL_CAMERA_POSITION[2] * scale;
+    }
+
+    return () => window.removeEventListener("resize", setZoom)
+  }, [camera])
 
 function onClick(event: ThreeEvent<MouseEvent>){
   event.stopPropagation()
@@ -147,7 +170,6 @@ setAnimating(true)
 
   return (
     <group>
-      <OrbitControls target={[0,0,0]}/>
       <Environment files={"/hdr/warehouse-256.hdr"}/>
       <group ref={originRef}>
 
@@ -205,6 +227,15 @@ setAnimating(true)
       </group>
       </group>
       <ContactShadows opacity={0.6} position={[0,-.08,0]}/>
+      <group
+      rotation={[-Math.PI / 2, 0, -Math.PI / 2]}
+      position={[0, -.09, -.5]}
+      scale={[0.2, 0.2, 0.2]}
+      >
+        <Html transform zIndexRange={[1, 0]} occlude="blending" wrapperClass="pointer-events-none">
+          <WavyPaths />
+        </Html>
+      </group>
     </group>
   )
 }
