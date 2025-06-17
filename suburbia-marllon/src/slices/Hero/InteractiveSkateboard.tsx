@@ -4,8 +4,9 @@ import * as THREE from "three"
 import { Skateboard } from '@/components/Skateboard'
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei'
 import { Canvas, ThreeEvent } from '@react-three/fiber'
-import React, { Suspense, useRef } from 'react'
+import React, { Suspense, useRef, useState } from 'react'
 import gsap from "gsap"
+import { Hotspot } from "./Hotspot"
 
 type Props = {
   deckTextureURL: string;
@@ -37,15 +38,24 @@ function Scene({deckTextureURL, wheelTextureURL, boltColor, truckColor}: Props) 
 const containerRef = useRef<THREE.Group>(null)
 const originRef = useRef<THREE.Group>(null)
 
+const [animating, setAnimating] = useState(false)
+const [showHotspot, setShowHotspot] = useState({
+  front: true,
+  middle: true,
+  back: true
+})
+
 function onClick(event: ThreeEvent<MouseEvent>){
   event.stopPropagation()
 
   const board = containerRef.current;
   const origin = originRef.current
 
-  if(!board || !origin) return
+  if(!board || !origin || animating) return
 
   const {name} = event.object;
+
+  setShowHotspot((current) => ({...current, [name]: false}))
 
   if(name === "back"){
     ollie(board);
@@ -56,6 +66,9 @@ function onClick(event: ThreeEvent<MouseEvent>){
   }
 
 }
+
+
+
 
 
 function ollie(board:THREE.Group){
@@ -115,8 +128,10 @@ function ollie(board:THREE.Group){
 
 
 function jumpBoard(board: THREE.Group){
+setAnimating(true)
+
   gsap
-  .timeline()
+  .timeline({onComplete: (()=> setAnimating(false))})
   .to(board.position, {
     y: .8,
     duration: .51,
@@ -150,16 +165,35 @@ function jumpBoard(board: THREE.Group){
       constWheelSpin
       
       />
-      
+
+      <Hotspot 
+      isVisible={!animating && showHotspot.front}
+      position={[0, 0.38, 1]}
+      color="#B8FC39"
+      />
+
 <mesh position={[0, 0.27, 0.9]} name="front" onClick={onClick}>
   <boxGeometry args={[0.6, 0.2, 0.58]}/>
   <meshStandardMaterial visible={false}/>
 </mesh>
 
+<Hotspot 
+      isVisible={!animating && showHotspot.middle}
+      position={[0, 0.33, 0]}
+      color="#FF7A51"
+      />
+
 <mesh position={[0, 0.27, 0]} name="middle" onClick={onClick}>
   <boxGeometry args={[.6, .1, 1.2]}/>
   <meshStandardMaterial visible={false}/>
 </mesh>
+
+
+<Hotspot 
+      isVisible={!animating && showHotspot.back}
+      position={[0, 0.35, -.9]}
+      color="#46ACFA"
+      />
 
 <mesh position={[0, 0.27, -0.9]} name="back" onClick={onClick}>
   <boxGeometry args={[0.6, 0.2, 0.58]}/>
