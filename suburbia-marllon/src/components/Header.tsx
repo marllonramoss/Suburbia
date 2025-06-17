@@ -1,13 +1,11 @@
 import Link from 'next/link'
-import React from 'react'
+import React, { FC } from 'react'
 import { ButtonLink } from './ButtonLink'
 import { Logo } from './Logo'
 import { createClient } from '@/prismicio'
 import { PrismicNextLink } from '@prismicio/next'
 
-type Props = {}
-
-export async function Header({}: Props) {
+export const Header: FC<Record<string, never>> = async () => {
 
     const client = createClient()
     const settings = await client.getSingle('settings')

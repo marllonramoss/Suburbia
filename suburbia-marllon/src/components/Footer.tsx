@@ -1,15 +1,12 @@
-
 import { createClient } from '@/prismicio'
 import { PrismicNextImage, PrismicNextLink } from '@prismicio/next'  
-import React from 'react'
+import React, { FC } from 'react'
 import { Logo } from '@/components/Logo'
 import { Bounded } from './Bounded'
 import { FooterPhysics } from './FooterPhysic'
 import { asImageSrc } from '@prismicio/client'
 
-type Props = {}
-
-export async function Footer({}: Props) {
+export const Footer: FC<Record<string, never>> = async () => {
 
     const client = createClient()
     const settings = await client.getSingle('settings')

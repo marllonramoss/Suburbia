@@ -24,7 +24,7 @@ export  function ParallaxImage({ foregroundImage, backgroundImage, className }: 
     window.addEventListener("mousemove", onMouseMove)
       
       function onMouseMove(event: MouseEvent) {
-        const {innerWidth, innerHeight} = window
+        const {innerWidth} = window
 
         const xPercent = (event.clientX / innerWidth - 0.5) * 2
         const yPercent = (event.clientY / innerWidth - 0.5) * 2
